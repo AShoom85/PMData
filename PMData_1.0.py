@@ -95,8 +95,18 @@ def average(dict, min_it):
     average_person_dict = {}
     average_person_dict.update({'average_person':{'calories_list':average_calories_list, 'steps_list': average_steps_list,"distance_list": average_distance_list }})
     return average_person_dict
-def steps_calories(dict, min_it, stepX):
-    coord(stepX)
+def steps_calories(dict, stepX):
+    x0 = 27 + stepX;  xf = 27 + stepX;
+    y0 = 470 ; yf = 470 ;
+    xa = x0
+    t = dict.get('average_person')
+    canv.create_line(x0, 475, xf, 27, fill="black", arrow=LAST)
+    for i in range(len(t.get('calories_list'))):
+        canv.create_line(x0, y0, xf, yf, fill="red")
+        xf = x0
+        yf = y0
+        x0 = xa + int((t.get('calories_list')[i])/8)
+        y0 = int((t.get('steps_list')[i])/90)
 
 
 
@@ -112,4 +122,6 @@ min_it = min(minInLen(persons_len_lists))
 drow(persons_dict, min_it, 0)
 average_pd = average(persons_dict, min_it)
 drow(average_pd, min_it, 280)
+steps_calories(average_pd, 550)
+
 window.mainloop()
