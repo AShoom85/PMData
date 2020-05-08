@@ -18,8 +18,8 @@ def sep(template):
     return list
 def personsList(num):
     persons_list = []
-    for i in range(1,num + 1):
-        if i <= 9 :
+    for i in range(1, num + 1):
+        if i <= 9:
             persons_list.append("p0"+str(i))
         else:
             persons_list.append("p"+str(i))
@@ -42,8 +42,10 @@ def personsDict(persons_list):
         persons_dict.update({i:dict})
     return persons_dict
 def line(list, cof, stepY, stepX, min_it, fill_color):
-    x0 = 20 + stepX; y0 = 470 - stepY;
-    xf = 20 + stepX; yf = 470 - stepY;
+    x0 = 20 + stepX
+    y0 = 470 - stepY
+    xf = 20 + stepX
+    yf = 470 - stepY
     step = 7.5
     for i in range(0, min_it):
         k = (list[i])/int(cof)
@@ -55,7 +57,7 @@ def line(list, cof, stepY, stepX, min_it, fill_color):
         canv.create_line(x0, y0, xf, yfk, fill=fill_color)
         canv.create_line(xa, 475, xb, 460, fill="black")
         y0 = yfk
-def drow(dict, min_it, stepX):
+def draw(dict, min_it, stepX):
     coord(stepX)
     for i in dict:
         t = dict.get(i)
@@ -69,7 +71,7 @@ def lenLists(dict):
     mas = {}
     for i in dict:
         t = dict.get(i)
-        mas.update({i:{'calories_list':len(t.get("calories_list")), 'steps_list':len(t.get("steps_list")), "distance_list":len(t.get("distance_list"))}})
+        mas.update({i: {'calories_list': len(t.get("calories_list")), 'steps_list': len(t.get("steps_list")), 'distance_list': len(t.get("distance_list"))}})
     return mas
 def minInLen(dict):
     min_len = []
@@ -84,30 +86,67 @@ def average(dict, min_it):
     average_distance_list = [0 for i in range(0, min_it)]
     for i in dict:
         t = dict.get(i)
-        for k in range(0, min_it ):
+        for k in range(0, min_it):
             average_calories_list[k] = average_calories_list[k] + t.get("calories_list")[k]
             average_steps_list[k] = average_steps_list[k] + t.get("steps_list")[k]
             average_distance_list[k] = average_distance_list[k] + t.get("distance_list")[k]
-    for i in range(0, min_it ):
+    for i in range(0, min_it):
         average_calories_list[i] = (average_calories_list[i]) / len(dict)
         average_steps_list[i] = (average_steps_list[i]) / len(dict)
         average_distance_list[i] = (average_distance_list[i]) / len(dict)
     average_person_dict = {}
-    average_person_dict.update({'average_person':{'calories_list':average_calories_list, 'steps_list': average_steps_list,"distance_list": average_distance_list }})
+    average_person_dict.update({'average_person': {'calories_list':average_calories_list, 'steps_list': average_steps_list,"distance_list": average_distance_list }})
     return average_person_dict
-def steps_calories(dict, stepX):
-    x0 = 27 + stepX;  xf = 27 + stepX;
-    y0 = 470 ; yf = 470 ;
-    xa = x0
-    t = dict.get('average_person')
-    canv.create_line(x0, 475, xf, 27, fill="black", arrow=LAST)
-    for i in range(len(t.get('calories_list'))):
-        canv.create_line(x0, y0, xf, yf, fill="red")
+
+
+class BuildGraph:
+    """name - str, point_zero - [x,y], values_x - [], values_y - [], factor - [x, y], color - str """
+    def __init__(self, name, point_zero, values_x, values_y, factor, canvas, color):
+        self.name = name
+        self.point_zero = point_zero
+        self.values_x = values_x
+        self.values_y = values_y
+        self.factor = factor
+        self.canvas = canvas
+        self.color = color
+
+    def draw_graph(self):
+        x0 = self.point_zero[0]
+        y0 = self.point_zero[1]
         xf = x0
         yf = y0
-        x0 = xa + int((t.get('calories_list')[i])/8)
-        y0 = int((t.get('steps_list')[i])/90)
+        for i in range(len(self.values_x)):
+            canv.create_line(x0, y0, xf, yf, fill=self.color)
+            xf = x0
+            yf = y0
+            x0 = self.point_zero[0] + int(self.values_x[i])/int(self.factor[0])
+            y0 = self.point_zero[1] - int(self.values_y[i])/int(self.factor[1])
 
+    def draw_coord_sys(self):
+        if (self.point_zero[0] + int(min(self.values_x)) / int(self.factor[0])) < self.point_zero[0]:
+            self.point_zero[0] = (self.point_zero[0] + int(min(self.values_x)) / int(self.factor[0])) + 40
+            self.canvas.create_line(self.point_zero[0], self.point_zero[1], (
+                             self.point_zero[0] + int(min(self.values_x)) / int(self.factor[0])) + 40,
+                             self.point_zero[1], fill="black", arrow=LAST)
+            self.canvas.create_line(self.point_zero[0], self.point_zero[1], (
+                             self.point_zero[0] + int(max(self.values_x)) / int(self.factor[0])) + 40,
+                             self.point_zero[1], fill="black", arrow=LAST)
+        else:
+            self.canvas.create_line(self.point_zero[0], self.point_zero[1], (
+                             self.point_zero[0] + int(max(self.values_x)) / int(self.factor[0])) + 40,
+                             self.point_zero[1], fill="black", arrow=LAST)
+        if (self.point_zero[1] - int(min(self.values_y)) / int(self.factor[1])) > self.point_zero[1]:
+            self.point_zero[1] = (self.point_zero[1] - int(min(self.values_y)) / int(self.factor[1])) - 40
+            self.canvas.create_line(self.point_zero[0], self.point_zero[1], self.point_zero[0], (
+                                 self.point_zero[1] - int(min(self.values_y)) / int(self.factor[1])) - 40,
+                                 fill="black", arrow=LAST)
+            self.canvas.create_line(self.point_zero[0], self.point_zero[1], self.point_zero[0], (
+                    self.point_zero[1] - int(max(self.values_y)) / int(self.factor[1])) - 40,
+                                    fill="black", arrow=LAST)
+        else:
+            self.canvas.create_line(self.point_zero[0], self.point_zero[1], self.point_zero[0], (
+                    self.point_zero[1] - int(max(self.values_y)) / int(self.factor[1])) - 40,
+                                    fill="black", arrow=LAST)
 
 
 window = Tk()
@@ -119,9 +158,13 @@ canv.pack()
 persons_dict = personsDict(personsList(16))
 persons_len_lists = lenLists(persons_dict)
 min_it = min(minInLen(persons_len_lists))
-drow(persons_dict, min_it, 0)
+#draw(persons_dict, min_it, 0)
 average_pd = average(persons_dict, min_it)
-drow(average_pd, min_it, 280)
-steps_calories(average_pd, 550)
+#draw(average_pd, min_it, 280)
+
+
+steps_calories_graph = BuildGraph('AveragePD', [25, 470], average_pd.get('average_person').get('calories_list'), average_pd.get('average_person').get('steps_list'), [8, 90], canv, "blue")
+steps_calories_graph.draw_graph()
+steps_calories_graph.draw_coord_sys()
 
 window.mainloop()
