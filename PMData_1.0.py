@@ -164,10 +164,9 @@ def draw_text(can, x, y, z, path ):
     with open(path, 'r', encoding='utf-8') as t:
         Text_read = t.read()
     can.create_text(x, y, text=Text_read, justify= z, fill="black")
-
 def run(can):
     global num
-    if num >= 4:
+    if num >= 5:
         can.delete("all")
         draw_text(can, 600, 250, CENTER, "Text0.txt")
         num = 0
@@ -192,14 +191,35 @@ def run(can):
                                           average_pd.get('average_person').get('steps_list'),
                                           [8, 90], can, "blue")
         steps_calories_graph.draw_graph()
+        can.create_text(200, 480, text="Average calories VS steps graph", fill="black")
         steps_calories_graph.draw_coord_sys()
         draw_text(can, 850, 250, LEFT, "Text3.txt")
         num = 4
-
+    elif num == 4:
+        can.delete("all")
+        steps_calories_graph = BuildGraph('Average_calories_vs_steps', [30, 470],
+                                          [i * 12 for i in range(len(calories_vs_steps_list))],
+                                          calories_vs_steps_list,
+                                          [1, 1], can, "blue")
+        steps_calories_graph.draw_graph()
+        can.create_text(200, 480, text="Average calories VS steps graph", fill="black")
+        steps_calories_graph.draw_coord_sys()
+        draw_text(can, 850, 250, LEFT, "Text4.txt")
+        num = 5
+def average_calories_vs_steps(dict):
+        calories_vs_steps_list = []
+        for i in dict:
+            t = dict.get(i)
+            for k in range(len(t.get('calories_list'))):
+                calories_vs_steps_list.append(((t.get('steps_list')[k])/t.get('calories_list')[k])*4)
+        return calories_vs_steps_list
 
 num = 0
 window = Tk()
 window.title("PMData")
+window.resizable(False, False)
+window.geometry('+{}+{}'.format((window.winfo_screenwidth()//2)-610,
+                                (window.winfo_screenheight()//2)-300))
 Button_next = Button(window, text="NEXT", width=170,
                      height=3, bg="white", fg="black",
                      activebackground="#555555", activeforeground="#ffffff")
@@ -212,9 +232,8 @@ persons_dict = personsDict(personsList(16))
 persons_len_lists = lenLists(persons_dict)
 min_it = min(minInLen(persons_len_lists))
 average_pd = average(persons_dict, min_it)
+calories_vs_steps_list = average_calories_vs_steps(average_pd)
 
 draw_text(can, 600, 250, CENTER, "Text0.txt")
 
 window.mainloop()
-
-
