@@ -1,0 +1,26 @@
+The PMData dataset that aims to combine the traditional lifelogging with sports activity logging. 
+Such a dataset enables the development of several interesting analysis applications, e.g., 
+where additional sports data can be used to predict and analyze everyday developments like a person's weight and sleep patterns, 
+and where traditional lifelog data can be used in a sports context to predict an athletes performance. 
+In this respect, we have used the Fitbit Versa 2 smartwatch wristband, the PMSys sports logging app, and Google forms for the data collection. 
+PMData contains logging data of 16 persons from a period of 5 months.
+Fitbit
+The data from the Fitbit Versa 2 smartwatch has been extracted into csv- and json files, and the fitbit directory contains the following files:
+calories.json shows how many calories the per-son have burned the last minute.
+distance.json gives the distance moved per minute. Distance is given in centimeters.
+exercise.json describes each activity in more detail. It contains the date with start and stop time, time in different activity levels, type of 
+activity and various performance metrics depending on the type of exercise, such as, 
+for running, it contains distance, time, steps, calories, speed,and pace.
+heart_rate.json shows the number of heartbeatsper minute (bpm) at a given time.
+sedentary_minutes.json sums up the number of sedentary minutes per day.
+lightly_active_minutes.json sums up the number of lightly active minutes per day.
+moderately_active_minutes.json sums up the number of moderately active minutes per day.
+very_active_minutes.json sums up the number of very active minutes per day.
+resting_heart_rate.json gives the resting heart rate per day.
+sleep_score.csv helps understand the sleep each night so you can see trends in the sleep patterns. It contains an overall 0-100 score made up 
+of composition, revitalization and duration scores, the number of deep sleep minutes, the resting heart rate and a restlessness score.
+sleep.json is a per sleep breakdown of the sleep into periods of light, deep, REM sleeps and time awake.
+steps.json displays the number of steps per minute.
+time_in_heart_rate_zones.json gives the number of minutes in different heart rate zones. Using the common formula of 220 minus your age to find 
+the max heartrate, Fitbit will calculate your maximum heart rate and then create three target heart rate zones-fat burn (50 to 69 percent of your 
+max heart rate), cardio (70 to 84 percent of your max heart rate), and peak (85 to 100 percent of your max heart rate).

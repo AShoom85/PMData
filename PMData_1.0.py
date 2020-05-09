@@ -19,7 +19,7 @@ class BuildGraph:
         xf = x0
         yf = y0
         for i in range(len(self.values_x)):
-            canv.create_line(x0, y0, xf, yf, fill=self.color)
+            self.canvas.create_line(x0, y0, xf, yf, fill=self.color)
             xf = x0
             yf = y0
             x0 = self.point_zero[0] + int(self.values_x[i])/int(self.factor[0])
@@ -86,14 +86,16 @@ def personsDict(persons_list):
         with open("pmdata/" + i + "/fitbit/distance.json")as distance_file:
             distance_dict = json.load(distance_file)
         distance_list = sep(distance_dict)
-        dict = {'calories_list':calories_list, 'steps_list': steps_list, 'distance_list':distance_list}
-        persons_dict.update({i:dict})
+        persons_dict.update({i: {'calories_list': calories_list,
+                                 'steps_list': steps_list, 'distance_list': distance_list}})
     return persons_dict
 def lenLists(dict):
     mas = {}
     for i in dict:
         t = dict.get(i)
-        mas.update({i: {'calories_list': len(t.get("calories_list")), 'steps_list': len(t.get("steps_list")), 'distance_list': len(t.get("distance_list"))}})
+        mas.update({i: {'calories_list': len(t.get("calories_list")),
+                        'steps_list': len(t.get("steps_list")),
+                        'distance_list': len(t.get("distance_list"))}})
     return mas
 def minInLen(dict):
     min_len = []
@@ -117,9 +119,11 @@ def average(dict, min_it):
         average_steps_list[i] = (average_steps_list[i]) / len(dict)
         average_distance_list[i] = (average_distance_list[i]) / len(dict)
     average_person_dict = {}
-    average_person_dict.update({'average_person': {'calories_list': average_calories_list, 'steps_list': average_steps_list,"distance_list": average_distance_list }})
+    average_person_dict.update({'average_person': {'calories_list': average_calories_list,
+                                                   'steps_list': average_steps_list,
+                                                   'distance_list': average_distance_list}})
     return average_person_dict
-def build_all_graph(dict, range_graph):
+def build_all_graph(dict, range_graph, name_taxt, can):
 
     for i in dict:
         t = dict.get(i)
@@ -128,8 +132,9 @@ def build_all_graph(dict, range_graph):
         else:
             calories_range = range_graph
         person = BuildGraph(i, [30, 470], [i * 7.5 for i in range(calories_range)],
-                            t.get('calories_list'), [1, 64], canv, "red")
+                            t.get('calories_list'), [1, 64], can, "red")
         person.draw_graph()
+        can.create_text(200, 480, text=name_taxt + " calories graph", fill="black")
         person.draw_coord_sys()
 
     for i in dict:
@@ -139,8 +144,9 @@ def build_all_graph(dict, range_graph):
         else:
             steps_range = range_graph
         person = BuildGraph(i, [30, 330], [i * 7.5 for i in range(steps_range)],
-                            t.get('steps_list'), [1, 540], canv, "blue")
+                            t.get('steps_list'), [1, 540], can, "blue")
         person.draw_graph()
+        can.create_text(200, 340, text=name_taxt + " steps graph", fill="black")
         person.draw_coord_sys()
 
     for i in dict:
@@ -149,27 +155,66 @@ def build_all_graph(dict, range_graph):
             distance_range = len(t.get('distance_list'))
         else:
             distance_range = range_graph
-        person = BuildGraph(i, [30, 170], [i * 7.5 for i in range(distance_range)],
-                            t.get('distance_list'), [1, 42000], canv, "green")
+        person = BuildGraph(i, [30, 180], [i * 7.5 for i in range(distance_range)],
+                            t.get('distance_list'), [1, 42000], can, "green")
         person.draw_graph()
+        can.create_text(200, 190, text=name_taxt + " distance graph", fill="black")
         person.draw_coord_sys()
+def draw_text(can, x, y, z, path ):
+    with open(path, 'r', encoding='utf-8') as t:
+        Text_read = t.read()
+    can.create_text(x, y, text=Text_read, justify= z, fill="black")
+
+def run(can):
+    global num
+    if num >= 4:
+        can.delete("all")
+        draw_text(can, 600, 250, CENTER, "Text0.txt")
+        num = 0
+    elif num == 0:
+        can.delete("all")
+        build_all_graph(persons_dict, 1, "All persons", can)
+        num = 1
+    elif num == 1:
+        can.delete("all")
+        build_all_graph(persons_dict, min_it, "All persons", can)
+        draw_text(can, 780, 280, LEFT, "Text1.txt")
+        num = 2
+    elif num == 2:
+        can.delete("all")
+        build_all_graph(average_pd, min_it, "Average", can)
+        draw_text(can, 780, 280, LEFT, "Text2.txt")
+        num = 3
+    elif num == 3:
+        can.delete("all")
+        steps_calories_graph = BuildGraph('AveragePD', [30, 470],
+                                          average_pd.get('average_person').get('calories_list'),
+                                          average_pd.get('average_person').get('steps_list'),
+                                          [8, 90], can, "blue")
+        steps_calories_graph.draw_graph()
+        steps_calories_graph.draw_coord_sys()
+        draw_text(can, 850, 250, LEFT, "Text3.txt")
+        num = 4
 
 
+num = 0
 window = Tk()
 window.title("PMData")
-canv = Canvas(window, width=1200, height=500)
-canv.pack()
-
+Button_next = Button(window, text="NEXT", width=170,
+                     height=3, bg="white", fg="black",
+                     activebackground="#555555", activeforeground="#ffffff")
+can = Canvas(window, width=1200, height=500)
+can.pack()
+Button_next.bind("<Button-1>", lambda event: run(can))
+Button_next.pack(side='bottom')
 
 persons_dict = personsDict(personsList(16))
 persons_len_lists = lenLists(persons_dict)
 min_it = min(minInLen(persons_len_lists))
 average_pd = average(persons_dict, min_it)
 
-build_all_graph(persons_dict, 1)
-build_all_graph(average_pd, min_it)
-steps_calories_graph = BuildGraph('AveragePD', [30, 470], average_pd.get('average_person').get('calories_list'), average_pd.get('average_person').get('steps_list'), [8, 90], canv, "blue")
-steps_calories_graph.draw_graph()
-steps_calories_graph.draw_coord_sys()
+draw_text(can, 600, 250, CENTER, "Text0.txt")
 
 window.mainloop()
+
+

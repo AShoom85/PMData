@@ -1,0 +1,7 @@
+The PMData dataset that aims to combine the traditional lifelogging with sports activity logging. 
+Such a dataset enables the development of several interesting analysis applications, e.g., 
+where additional sports data can be used to predict and analyze everyday developments like a person's weight and sleep patterns, 
+and where traditional lifelog data can be used in a sports context to predict an athletes performance. 
+In this respect, we have used the Fitbit Versa 2 smartwatch wristband, the PMSys sports logging app, and Google forms for the data collection. 
+PMData contains logging data of 16 persons from a period of 5 months.
+Fitbit
